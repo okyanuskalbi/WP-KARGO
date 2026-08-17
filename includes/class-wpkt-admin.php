@@ -160,7 +160,9 @@ class WPKT_Admin {
 
 		$order = wc_get_order( $order_id );
 
-		if ( ! $order instanceof WC_Order || ! current_user_can( 'edit_shop_orders' ) ) {
+		// Siparis bazinda yetki: genel edit_shop_orders yerine meta cap
+		// sorgulanir; boylece tek siparise kisitli roller de dogru degerlenir.
+		if ( ! $order instanceof WC_Order || ! current_user_can( 'edit_shop_order', $order_id ) ) {
 			return;
 		}
 
@@ -287,10 +289,18 @@ class WPKT_Admin {
 	/**
 	 * Bildirimi elle yeniden gonderir.
 	 *
+	 * WooCommerce bu kancayi islem oncesinde genel siparis yetkisiyle
+	 * cagirir; yine de siparis bazinda dogrulanir — kanca herkese acik
+	 * bir giris noktasi degildir ama derinlemesine savunma zarar vermez.
+	 *
 	 * @param WC_Order $order Siparis.
 	 */
 	public function resend_email( $order ) {
 		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_shop_order', $order->get_id() ) ) {
 			return;
 		}
 

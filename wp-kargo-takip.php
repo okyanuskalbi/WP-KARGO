@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       WP Kargo Takip
  * Plugin URI:        https://github.com/okyanuskalbi/WP-KARGO
- * Description:       WooCommerce siparislerine kargo takip numarasi girin; musteriye "Kargoya Verildi" durumu ve takip numarasi/linki iceren e-posta otomatik gonderilsin. 1. faz: Yurtici Kargo.
- * Version:           1.0.0
+ * Description:       WooCommerce siparislerine kargo takip numarasi girin; musteriye "Kargoya Verildi" durumu ve takip numarasi/linki iceren e-posta otomatik gonderilsin. Yurtici, Aras, MNG, PTT ve Surat Kargo destekli.
+ * Version:           1.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            okyanuskalbi
@@ -21,7 +21,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WPKT_VERSION', '1.0.0' );
+define( 'WPKT_VERSION', '1.1.0' );
 define( 'WPKT_FILE', __FILE__ );
 define( 'WPKT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WPKT_URL', plugin_dir_url( __FILE__ ) );
