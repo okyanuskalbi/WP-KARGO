@@ -4,7 +4,7 @@ WooCommerce siparislerine kargo takip numarasi girin — siparis **"Kargoya Veri
 durumuna gecsin ve musteriye takip numarasi + takip linki iceren e-posta otomatik
 gitsin. Ucretsiz, lisans anahtari yok, GitHub release'lerinden kendini gunceller.
 
-**1. faz:** Yurtici Kargo.
+**Desteklenen firmalar:** Yurtici, Aras, MNG, PTT ve Surat Kargo.
 
 ---
 
@@ -42,7 +42,7 @@ yeniden gonder** secenegini kullanin.
 | --- | --- | --- |
 | Durumu otomatik degistir | Acik | Numara kaydedilince siparis "Kargoya Verildi" olur |
 | Takip bilgisini diger e-postalara ekle | Acik | Fatura/siparis e-postalarinda da takip bilgisi gorunur |
-| Yurtici Kargo takip adresi | Bos | Ozel sorgu adresi. `{no}` takip numarasiyla degistirilir |
+| Takip adresleri (firma basina) | Bos | Her firma icin ozel sorgu adresi. `{no}` takip numarasiyla degistirilir |
 
 E-postanin **konusu, basligi ve metni**: WooCommerce > Ayarlar > E-postalar >
 **Kargoya verildi**.
@@ -74,8 +74,8 @@ Release verisi 6 saat onbelleklenir; hemen gormek icin eklenti satirindaki
 3. Etiketi atin:
 
 ```bash
-git tag v1.0.1
-git push origin v1.0.1
+git tag v1.1.0
+git push origin v1.1.0
 ```
 
 CI (`.github/workflows/release.yml`) PHP lint calistirir, **uc surum degeri
@@ -94,13 +94,14 @@ define( 'WPKT_GH_TAG_PREFIX', 'v' );
 ## Yeni kargo firmasi ekleme
 
 `includes/class-wpkt-carriers.php` icindeki diziye bir satir eklemek yeterli —
-admin kutusu, liste kolonu, e-posta ve takip linki ayni kayittan beslenir:
+admin kutusu, liste kolonu, e-posta, takip linki **ve ayarlar sayfasindaki
+ozel adres alani** ayni kayittan beslenir:
 
 ```php
-'aras' => array(
-	'label' => 'Aras Kargo',
-	'url'   => 'https://www.araskargo.com.tr/...?no={no}',
-	'phone' => '444 25 52',
+'hepsijet' => array(
+	'label' => 'Hepsijet',
+	'url'   => 'https://www.hepsijet.com/gonderi-takibi/{no}',
+	'phone' => '0850 255 05 25',
 ),
 ```
 
@@ -134,8 +135,8 @@ assets/admin.css                Siparis ekrani kutusu stilleri
 
 ## Yol haritasi
 
-- **1. faz (bu surum):** Yurtici Kargo, elle takip numarasi, otomatik durum + e-posta
-- 2. faz: Aras / MNG / PTT / Suratkargo, toplu (bulk) numara girisi
+- **1. faz:** Yurtici Kargo, elle takip numarasi, otomatik durum + e-posta (1.0.0)
+- **2. faz:** Aras / MNG / PTT / Surat destegi (1.1.0) — sirada: toplu (bulk) numara girisi
 - 3. faz: Kargo firmasi API entegrasyonu ile otomatik durum sorgulama, SMS
 
 ## Lisans
