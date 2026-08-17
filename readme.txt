@@ -4,7 +4,7 @@ Tags: woocommerce, kargo, shipment tracking, yurtici kargo, turkiye
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,12 @@ teslim webhook'u gerekir; bu ucretsiz eklenti oyle bir harici servise
 baglanmaz.
 
 == Changelog ==
+
+= 1.2.1 =
+* Mail gorunumu yenilendi: takip numarasi buyuk puntolu, kart gorunumlu bir
+  kutuda; numara ve "Kargomu takip et" butonu yeni sekmede acilir.
+* Konu ve baslikta takip numarasi da geciyor (govde acilmadan onizlemede gorunur).
+* Varsayilan giris metni kaldirildi (govde zaten yeterince acik).
 
 = 1.2.0 =
 * Siparis listesinde "hazirlaniyor" durumundaki siparislere tek alanli hizli

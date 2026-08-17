@@ -53,25 +53,33 @@ class WPKT_Email_Shipped extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return __( '#{order_number} numarali siparisiniz kargoya verildi', 'wp-kargo-takip' );
+		return __( '#{order_number} numarali siparisiniz kargoya verildi — Takip No: {tracking_number}', 'wp-kargo-takip' );
 	}
 
 	/**
 	 * Varsayilan baslik.
 	 *
+	 * Takip numarasi burada da gecer: musteri mail istemcisinin onizlemesinde
+	 * govdeyi acmadan numarayi gorsun.
+	 *
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Siparisiniz kargoya verildi', 'wp-kargo-takip' );
+		return __( 'Siparisiniz kargoya verildi — Takip No: {tracking_number}', 'wp-kargo-takip' );
 	}
 
 	/**
 	 * Varsayilan giris metni.
 	 *
+	 * Bos: govde zaten kargo firmasi + takip numarasini net bir kutuda
+	 * gosteriyor, "sonuc bos gorunebilir" gibi ek aciklama gerekmiyor. Panelden
+	 * (WooCommerce > Ayarlar > E-postalar > Kargoya verildi) istenirse
+	 * doldurulabilir.
+	 *
 	 * @return string
 	 */
 	public function get_default_additional_content() {
-		return __( 'Kargo firmasi teslimat surecini baslatti. Takip numarasi sistemlere islenene kadar sorgu sonucu birkac saat bos gorunebilir.', 'wp-kargo-takip' );
+		return '';
 	}
 
 	/**

@@ -3,6 +3,22 @@
 Tum onemli degisiklikler burada. Surum numaralari
 [Semantic Versioning](https://semver.org/lang/tr/) izler.
 
+## [1.2.1] — 2026-08-17
+
+### Degisti
+
+- **Mail gorunumu yenilendi:** takip numarasi artik tek renkli, belirgin bir
+  kutu icinde ve buyuk puntoyla gosteriliyor; hem numaranin kendisi hem
+  "Kargomu takip et" butonu **yeni sekmede** acilir (`target="_blank"`).
+  Onceki tablo gorunumu yerine tek blok, kart gorunumlu tasarim kullanildi.
+- Varsayilan konu ve baslikta artik takip numarasi da geciyor
+  ("... kargoya verildi — Takip No: {tracking_number}"): musteri mail
+  istemcisinin onizlemesinde govdeyi acmadan numarayi gorur.
+- Varsayilan giris metni ("Kargo firmasi teslimat surecini baslatti...")
+  kaldirildi — govde zaten kargo firmasi + takip numarasini net gosteriyor,
+  ek aciklamaya gerek yoktu. Panelden istenirse yeniden yazilabilir
+  (WooCommerce > Ayarlar > E-postalar > Kargoya verildi).
+
 ## [1.2.0] — 2026-08-17
 
 ### Eklendi

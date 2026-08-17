@@ -21,9 +21,11 @@ defined( 'ABSPATH' ) || exit;
 do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 
-<p><?php printf( esc_html__( 'Merhaba %s,', 'wp-kargo-takip' ), esc_html( $order->get_billing_first_name() ) ); ?></p>
+<p style="margin:0 0 16px;">
+	<?php printf( esc_html__( 'Merhaba %s,', 'wp-kargo-takip' ), esc_html( $order->get_billing_first_name() ) ); ?>
+</p>
 
-<p>
+<p style="margin:0 0 24px;">
 	<?php
 	printf(
 		/* translators: %s: siparis numarasi. */
@@ -33,29 +35,43 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 	?>
 </p>
 
-<table cellspacing="0" cellpadding="12" border="1" style="width:100%;border-collapse:collapse;border-color:#e5e5e5;margin-bottom:24px;">
-	<tbody>
-		<tr>
-			<th scope="row" style="text-align:left;background:#f8f8f8;width:40%;"><?php esc_html_e( 'Kargo firmasi', 'wp-kargo-takip' ); ?></th>
-			<td><?php echo esc_html( $carrier_label ); ?></td>
-		</tr>
-		<tr>
-			<th scope="row" style="text-align:left;background:#f8f8f8;"><?php esc_html_e( 'Takip numarasi', 'wp-kargo-takip' ); ?></th>
-			<td style="font-size:18px;font-weight:bold;letter-spacing:1px;"><?php echo esc_html( $tracking_number ); ?></td>
-		</tr>
-	</tbody>
+<!-- Takip kutusu: tek renkli, gorsel gurultu olmadan tek bir bakista okunsun diye kenarlik + hafif dolgu ile ayrilmis tek blok. -->
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 24px;">
+	<tr>
+		<td style="background:#f7f5fb;border:1px solid #e3ddf0;border-radius:8px;padding:24px;text-align:center;">
+			<p style="margin:0 0 4px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:#7f54b3;font-weight:700;">
+				<?php echo esc_html( $carrier_label ); ?>
+			</p>
+
+			<?php if ( '' !== $tracking_url ) : ?>
+				<p style="margin:0 0 20px;">
+					<a href="<?php echo esc_url( $tracking_url ); ?>" target="_blank" rel="noopener noreferrer"
+						style="font-size:26px;font-weight:700;letter-spacing:1px;color:#2c2c2c;text-decoration:none;border-bottom:2px solid #7f54b3;">
+						<?php echo esc_html( $tracking_number ); ?>
+					</a>
+				</p>
+			<?php else : ?>
+				<p style="margin:0 0 20px;font-size:26px;font-weight:700;letter-spacing:1px;color:#2c2c2c;">
+					<?php echo esc_html( $tracking_number ); ?>
+				</p>
+			<?php endif; ?>
+
+			<?php if ( '' !== $tracking_url ) : ?>
+				<a href="<?php echo esc_url( $tracking_url ); ?>" target="_blank" rel="noopener noreferrer"
+					style="display:inline-block;padding:13px 28px;background:#7f54b3;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:700;font-size:15px;">
+					<?php esc_html_e( 'Kargomu takip et', 'wp-kargo-takip' ); ?>
+				</a>
+			<?php endif; ?>
+		</td>
+	</tr>
 </table>
 
 <?php if ( '' !== $tracking_url ) : ?>
-	<p style="margin-bottom:24px;">
-		<a href="<?php echo esc_url( $tracking_url ); ?>"
-			style="display:inline-block;padding:12px 22px;background:#7f54b3;color:#ffffff;text-decoration:none;border-radius:4px;font-weight:bold;">
-			<?php esc_html_e( 'Kargomu takip et', 'wp-kargo-takip' ); ?>
+	<p style="margin:0 0 24px;font-size:12px;color:#767676;">
+		<?php esc_html_e( 'Buton veya takip numarasi acilmazsa bu adresi tarayiciniza kopyalayin:', 'wp-kargo-takip' ); ?><br />
+		<a href="<?php echo esc_url( $tracking_url ); ?>" target="_blank" rel="noopener noreferrer" style="color:#7f54b3;word-break:break-all;">
+			<?php echo esc_html( $tracking_url ); ?>
 		</a>
-	</p>
-	<p style="font-size:13px;color:#666;">
-		<?php esc_html_e( 'Buton calismazsa bu adresi tarayiciniza kopyalayin:', 'wp-kargo-takip' ); ?><br />
-		<?php echo esc_html( $tracking_url ); ?>
 	</p>
 <?php endif; ?>
 
