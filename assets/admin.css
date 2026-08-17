@@ -1,0 +1,39 @@
+/* WP Kargo Takip — siparis ekrani kutusu */
+
+.wpkt-box .wpkt-field {
+	width: 100%;
+	margin-top: 4px;
+}
+
+.wpkt-box label {
+	display: block;
+}
+
+.wpkt-box .wpkt-meta {
+	padding: 8px 10px;
+	background: #f6f7f7;
+	border-left: 3px solid #7f54b3;
+	line-height: 1.6;
+}
+
+.wpkt-box .wpkt-status--sent {
+	color: #1d6b3a;
+}
+
+.wpkt-box .wpkt-status--pending {
+	color: #8a6d1a;
+}
+
+.wpkt-box .wpkt-hint {
+	color: #646970;
+	font-size: 12px;
+	margin-bottom: 0;
+}
+
+.column-wpkt_tracking small {
+	color: #646970;
+}
+
+.column-wpkt_tracking .wpkt-dash {
+	color: #c3c4c7;
+}

@@ -1,0 +1,95 @@
+name: Yayin
+
+# `v*` etiketi push edildiginde eklenti zip'ini uretir ve release'e ekler.
+# Kurulu eklentiler bu release'i GitHub API'sinden gorup kendini gunceller.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Yayinlanacak etiket (orn. v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ inputs.tag || github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP sozdizimi kontrolu
+        # Bozuk bir PHP dosyasi yayinlanirsa siteler beyaz ekrana duser;
+        # zip'ten once her dosya derlenebiliyor mu diye bakilir.
+        run: |
+          set -euo pipefail
+          find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
+
+      - name: Surum tutarliligini dogrula
+        # Etiket ile eklenti basligindaki Version ayrisirsa WordPress
+        # guncellemeyi kurar ama surum eski kalir; dongu sonsuza gider.
+        run: |
+          set -euo pipefail
+          TAG_VERSION="${TAG#v}"
+          FILE_VERSION="$(grep -m1 -oP '^\s*\*\s*Version:\s*\K[0-9][^\s]*' wp-kargo-takip.php)"
+          CONST_VERSION="$(grep -m1 -oP "define\(\s*'WPKT_VERSION',\s*'\K[^']+" wp-kargo-takip.php)"
+          STABLE_TAG="$(grep -m1 -oP '^Stable tag:\s*\K[0-9][^\s]*' readme.txt)"
+          echo "etiket=$TAG_VERSION baslik=$FILE_VERSION sabit=$CONST_VERSION readme=$STABLE_TAG"
+          for found in "$FILE_VERSION" "$CONST_VERSION" "$STABLE_TAG"; do
+            if [ "$TAG_VERSION" != "$found" ]; then
+              echo "::error::Surum uyusmuyor. Etiket $TAG_VERSION; bulunan: baslik=$FILE_VERSION sabit=$CONST_VERSION readme=$STABLE_TAG"
+              exit 1
+            fi
+          done
+          echo "VERSION=$TAG_VERSION" >> "$GITHUB_ENV"
+
+      - name: Zip olustur
+        # Arsivin kokunde tek bir `wp-kargo-takip/` klasoru olmali; WordPress
+        # eklenti dizinini bu klasor adindan turetir. Depo dosyalari kokte
+        # durdugu icin once dogru isimli bir klasora kopyalanir.
+        run: |
+          set -euo pipefail
+          ZIP="wp-kargo-takip-${VERSION}.zip"
+          rm -rf build && mkdir -p build/wp-kargo-takip
+          # Kopyalama tar ile: rsync her kosucuda kurulu olmayabilir.
+          tar --exclude='./.git' --exclude='./.github' --exclude='./build' \
+              --exclude='./.gitignore' --exclude='./.DS_Store' \
+              -cf - . | ( cd build/wp-kargo-takip && tar -xf - )
+          ( cd build && zip -qr "../$ZIP" wp-kargo-takip )
+          unzip -l "$ZIP"
+          echo "ZIP=$ZIP" >> "$GITHUB_ENV"
+
+      - name: Release yayinla / guncelle
+        run: |
+          set -euo pipefail
+          # Not: heredoc yerine printf — YAML icinde girintili heredoc
+          # sonlandiricisi taninmaz ve adim sessizce bozulur.
+          printf '%s\n' \
+            "## WP Kargo Takip ${VERSION}" \
+            '' \
+            "Kurulum: \`$ZIP\` dosyasini WordPress > Eklentiler > Yeni Ekle >" \
+            'Eklenti Yukle ile yukleyin.' \
+            '' \
+            'Eklenti kurulu ise indirmeye gerek yok — **Eklentiler** ekraninda' \
+            'guncelleme uyarisi cikar, tek tikla kurulur.' \
+            '' \
+            'Degisiklikler: `readme.txt` > Changelog' \
+            > notes.md
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ZIP" --clobber
+          else
+            gh release create "$TAG" "$ZIP" \
+              --title "WP Kargo Takip ${VERSION}" \
+              --notes-file notes.md
+          fi
