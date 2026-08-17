@@ -95,6 +95,16 @@ class WPKT_Order {
 
 		$order->update_meta_data( self::META_DATE, '' === $number ? '' : $date );
 
+		/*
+		 * Numara bosaltilinca bildirim damgasi da silinir. Aksi halde admin
+		 * numarayi silip AYNI numarayi tekrar girdiginde damga hala o numarayi
+		 * gosterir ve musteriye hic mail gitmez — yanlis numara girip duzelten
+		 * kullanicinin basina gelen sessiz kayip tam olarak budur.
+		 */
+		if ( '' === $number ) {
+			$order->update_meta_data( self::META_NOTIFY, '' );
+		}
+
 		$changed = $number !== $old;
 
 		if ( $changed ) {

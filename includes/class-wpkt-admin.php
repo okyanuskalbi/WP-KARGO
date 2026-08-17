@@ -40,7 +40,18 @@ class WPKT_Admin {
 	 * @param string $screen_id Ekran kimligi.
 	 */
 	public function add_meta_box( $screen_id ) {
-		$screens = array( 'shop_order', 'woocommerce_page_wc-orders' );
+		/*
+		 * HPOS ekran kimligi sabit varsayilmaz: WooCommerce menu konumunu
+		 * degistirirse elle yazilmis "woocommerce_page_wc-orders" sessizce
+		 * eslesmez ve kutu hic gorunmez. Kimligi WooCommerce'in kendisi verir.
+		 */
+		$screens = array( 'shop_order' );
+
+		if ( function_exists( 'wc_get_page_screen_id' ) ) {
+			$screens[] = wc_get_page_screen_id( 'shop-order' );
+		} else {
+			$screens[] = 'woocommerce_page_wc-orders';
+		}
 
 		if ( ! in_array( $screen_id, $screens, true ) ) {
 			return;
