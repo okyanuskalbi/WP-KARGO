@@ -24,6 +24,10 @@
 	color: #8a6d1a;
 }
 
+.wpkt-box .wpkt-status--failed {
+	color: #b32d2e;
+}
+
 .wpkt-box .wpkt-hint {
 	color: #646970;
 	font-size: 12px;
@@ -36,4 +40,35 @@
 
 .column-wpkt_tracking .wpkt-dash {
 	color: #c3c4c7;
+}
+
+.column-wpkt_tracking .wpkt-mail-status--sent {
+	color: #1d6b3a;
+}
+
+.column-wpkt_tracking .wpkt-mail-status--failed {
+	color: #b32d2e;
+}
+
+.column-wpkt_tracking .wpkt-preview-link {
+	white-space: nowrap;
+}
+
+.wpkt-quick-form {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex-wrap: wrap;
+}
+
+.wpkt-quick-form .wpkt-quick-input {
+	width: 110px;
+	min-height: 28px;
+}
+
+.wpkt-quick-form .wpkt-quick-error {
+	display: block;
+	width: 100%;
+	color: #b32d2e;
+	font-size: 12px;
 }

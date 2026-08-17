@@ -3,6 +3,37 @@
 Tum onemli degisiklikler burada. Surum numaralari
 [Semantic Versioning](https://semver.org/lang/tr/) izler.
 
+## [1.1.0] — 2026-08-17
+
+### Eklendi
+
+- **Siparis listesinden tek tikla ekleme:** "hazirlaniyor" durumundaki
+  siparislerde, takip numarasi yoksa kolon icinde tek alanli bir form
+  gorunur. Numarayi girip **Ekle**'ye basmak siparis ekranini acmadan
+  kaydeder; kayit aninda mevcut ayarlara gore siparis **Kargoya Verildi**ye
+  gecer ve musteriye mail gider (AJAX, `wp_ajax_wpkt_quick_save_tracking`).
+  Diger durumlardaki siparislerde (odenmemis, iptal, iade vb.) bu form
+  kasten gosterilmez — tek tikla yanlis siparisi kargoya vermemek icin.
+- **Gonderim durumu izleme:** mail `wp_mail()` uzerinden posta sunucusuna
+  basariyla teslim edildi mi, ne zaman, basarisizsa hangi hatayla — siparis
+  kutusunda ve liste kolonunda gorunur (`_wpkt_mail_status`,
+  `_wpkt_mail_sent_at`, `_wpkt_mail_error`).
+  **Sinir:** bu, musterinin gelen kutusuna ulastigina dair kesin onay
+  DEGILDIR ("delivered" degil, "sunucuya teslim edildi"). Gercek teslim
+  onayi icin bir ESP'nin (Postmark/SendGrid/Mailgun) webhook'una baglanmak
+  gerekir; bu ucretsiz eklenti harici servise baglanmiyor, arayuz de bunu
+  acikca "gonderildi" diye etiketliyor, "teslim oldu" demiyor.
+- **E-posta on izleme:** siparis kutusunda ve liste kolonunda "on izle"
+  linki, musteriye tam olarak gidecek HTML govdeyi (CSS inline'lama dahil)
+  yeni sekmede acar. Mail gondermez (`admin_post_wpkt_preview_email`,
+  nonce'lu).
+
+### Degisti
+
+- Basarisiz gonderimde `_wpkt_notified_number` damgasi artik kilitlenmiyor:
+  yalnizca basarili gonderimde isaretlenir, boylece gecici bir SMTP
+  hatasindan sonra sonraki kayitta otomatik deneme sessizce engellenmiyor.
+
 ## [1.0.0] — 2026-08-17
 
 Ilk surum. **1. faz: Yurtici Kargo.**

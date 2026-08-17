@@ -99,15 +99,17 @@ class WPKT_Emails {
 		 */
 		do_action( 'wpkt_order_shipped_notification', $order->get_id(), $order );
 
-		WPKT_Order::mark_notified( $order );
-
-		$order->add_order_note(
-			sprintf(
-				/* translators: %s: takip numarasi. */
-				__( 'Kargo bilgilendirme e-postasi musteriye gonderildi (takip no: %s).', 'wp-kargo-takip' ),
-				WPKT_Order::get_number( $order )
-			)
-		);
+		/*
+		 * WPKT_Email_Shipped::trigger() do_action icinde SENKRON calisir ve
+		 * gonderim sonucunu WPKT_Order::set_mail_status()'a (siparis notu
+		 * dahil) zaten yazmis olur. "notified" damgasi yalnizca BASARILI
+		 * gonderimde kilitlenir; boylece SMTP hatasi gibi gecici bir
+		 * basarisizlikta sonraki kayittaki otomatik deneme sessizce
+		 * engellenmez — is_notified() guard'i bosuna atlanmaz.
+		 */
+		if ( 'sent' === WPKT_Order::get_mail_status( $order ) ) {
+			WPKT_Order::mark_notified( $order );
+		}
 	}
 
 	/**

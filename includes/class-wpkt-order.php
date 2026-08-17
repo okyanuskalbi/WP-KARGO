@@ -15,10 +15,13 @@ defined( 'ABSPATH' ) || exit;
  */
 class WPKT_Order {
 
-	const META_NUMBER  = '_wpkt_tracking_number';
-	const META_CARRIER = '_wpkt_carrier';
-	const META_DATE    = '_wpkt_shipped_date';
-	const META_NOTIFY  = '_wpkt_notified_number';
+	const META_NUMBER        = '_wpkt_tracking_number';
+	const META_CARRIER       = '_wpkt_carrier';
+	const META_DATE          = '_wpkt_shipped_date';
+	const META_NOTIFY        = '_wpkt_notified_number';
+	const META_MAIL_STATUS   = '_wpkt_mail_status';
+	const META_MAIL_SENT_AT  = '_wpkt_mail_sent_at';
+	const META_MAIL_ERROR    = '_wpkt_mail_error';
 
 	/**
 	 * Takip numarasi.
@@ -163,5 +166,74 @@ class WPKT_Order {
 	public static function mark_notified( $order ) {
 		$order->update_meta_data( self::META_NOTIFY, self::get_number( $order ) );
 		$order->save();
+	}
+
+	/**
+	 * Kargo mailinin gonderim durumu: 'sent', 'failed' veya henuz denenmediyse bos.
+	 *
+	 * @param WC_Order $order Siparis.
+	 * @return string
+	 */
+	public static function get_mail_status( $order ) {
+		return (string) $order->get_meta( self::META_MAIL_STATUS );
+	}
+
+	/**
+	 * Son gonderim denemesinin unix zaman damgasi.
+	 *
+	 * @param WC_Order $order Siparis.
+	 * @return int
+	 */
+	public static function get_mail_sent_at( $order ) {
+		$ts = $order->get_meta( self::META_MAIL_SENT_AT );
+
+		return $ts ? (int) $ts : 0;
+	}
+
+	/**
+	 * Basarisiz gonderimde sunucunun dondurdugu hata mesaji.
+	 *
+	 * @param WC_Order $order Siparis.
+	 * @return string
+	 */
+	public static function get_mail_error( $order ) {
+		return (string) $order->get_meta( self::META_MAIL_ERROR );
+	}
+
+	/**
+	 * E-posta gonderim sonucunu kaydeder.
+	 *
+	 * ONEMLI SINIR: "sent" burada yalnizca wp_mail()'in iletiyi posta
+	 * sunucusuna basariyla teslim ettigini gosterir. Musterinin gelen
+	 * kutusuna ulastigini (gercek "delivered" durumunu) dogrulamak icin
+	 * Postmark/SendGrid/Mailgun gibi bir ESP'nin teslim webhook'u gerekir —
+	 * bu eklenti oyle bir harici servise baglanmiyor, arayuzde de bu ayrim
+	 * acikca "gonderildi/gonderilemedi" olarak etiketlenir.
+	 *
+	 * @param WC_Order $order Siparis.
+	 * @param bool     $sent  wp_mail() basarili mi dondu.
+	 * @param string   $error Basarisizsa wp_mail_failed hatasi.
+	 */
+	public static function set_mail_status( $order, $sent, $error = '' ) {
+		$order->update_meta_data( self::META_MAIL_STATUS, $sent ? 'sent' : 'failed' );
+		$order->update_meta_data( self::META_MAIL_SENT_AT, time() );
+		$order->update_meta_data( self::META_MAIL_ERROR, $sent ? '' : $error );
+		$order->save();
+
+		$order->add_order_note(
+			$sent
+				? sprintf(
+					/* translators: %s: takip numarasi. */
+					__( 'Kargo bilgilendirme e-postasi musteriye gonderildi (takip no: %s).', 'wp-kargo-takip' ),
+					self::get_number( $order )
+				)
+				: ( '' !== $error
+					? sprintf(
+						/* translators: %s: sunucu hata mesaji. */
+						__( 'Kargo bilgilendirme e-postasi gonderilemedi: %s', 'wp-kargo-takip' ),
+						$error
+					)
+					: __( 'Kargo bilgilendirme e-postasi gonderilemedi.', 'wp-kargo-takip' ) )
+		);
 	}
 }

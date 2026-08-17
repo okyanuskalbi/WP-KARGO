@@ -4,7 +4,7 @@ Tags: woocommerce, kargo, shipment tracking, yurtici kargo, turkiye
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,7 +46,24 @@ yazabilirsiniz.
 
 1. faz yalnizca Yurtici Kargo icerir. Aras, MNG, PTT ve Suratkargo 2. fazda gelir.
 
+= Musterinin maili gercekten teslim oldu mu? =
+
+Eklenti mailin posta sunucusuna basariyla iletildigini gosterir ("gonderildi/
+gonderilemedi"). Musterinin gelen kutusuna ulastigina dair kesin onay
+(gercek "delivered" durumu) icin Postmark/SendGrid/Mailgun gibi bir ESP'nin
+teslim webhook'u gerekir; bu ucretsiz eklenti oyle bir harici servise
+baglanmaz.
+
 == Changelog ==
+
+= 1.1.0 =
+* Siparis listesinde "hazirlaniyor" durumundaki siparislere tek alanli hizli
+  takip no ekleme (AJAX); kaydedildigi an "Kargoya Verildi"ye gecer ve mail gider.
+* E-posta gonderim durumu: basarili/basarisiz + zaman + hata mesaji, siparis
+  kutusunda ve liste kolonunda gorunur. (Not: posta sunucusuna teslim
+  onayidir, musteri gelen kutusuna ulastigina dair onay degildir.)
+* "Kargoya verildi" mailinin tam govdesini yeni sekmede on izleme (mail
+  gondermeden).
 
 = 1.0.0 =
 * Ilk surum: Yurtici Kargo, "Kargoya Verildi" siparis durumu, takip numarali

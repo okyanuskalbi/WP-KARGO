@@ -34,6 +34,28 @@ Ayni takip numarasi icin ikinci kez e-posta gonderilmez. Elle tekrar gondermek
 icin siparis ekranindaki **Siparis islemleri > Kargo bilgilendirme e-postasini
 yeniden gonder** secenegini kullanin.
 
+### Siparis listesinden tek tikla ekleme
+
+"Hazirlaniyor" durumundaki bir siparisin takip numarasi henuz yoksa,
+WooCommerce > Siparisler listesindeki **Kargo Takip** kolonunda kucuk bir
+form gorunur. Numarayi yazip **Ekle**'ye basmak siparisi acmadan kaydeder;
+kayit aninda (varsayilan ayarlarla) siparis **Kargoya Verildi**ye gecer ve
+mail gider — siparis ekranina hic girmeden. Diger durumlardaki siparislerde
+(odeme bekleyen, iptal, iade vb.) bu form kasten gosterilmez.
+
+### Gonderim durumu ve on izleme
+
+Siparis kutusunda ve liste kolonunda mailin **posta sunucusuna teslim
+edilip edilmedigi** gorunur (basarisizsa hata mesajiyla). Ayrica **on izle**
+linki, musteriye gidecek HTML govdeyi mail gondermeden yeni sekmede acar.
+
+> **Onemli sinir:** "gonderildi" burada `wp_mail()`'in iletiyi sunucuya
+> teslim ettigi anlamina gelir — musterinin gelen kutusuna ulastigina dair
+> kesin onay (gercek "delivered" durumu) DEGILDIR. Bunu dogrulamak icin
+> Postmark/SendGrid/Mailgun gibi bir e-posta servisinin (ESP) teslim
+> webhook'una baglanmak gerekir; bu ucretsiz eklenti oyle bir harici
+> servise baglanmiyor (2. faz adayi, API anahtari gerektirir).
+
 ## Ayarlar
 
 **WooCommerce > Ayarlar > Kargo > Kargo Takip**
@@ -123,13 +145,14 @@ includes/
   class-wpkt-carriers.php       Kargo firmalari kaydi + takip URL uretimi
   class-wpkt-order.php          Siparis uzerindeki kargo verisi (tek giris noktasi)
   class-wpkt-statuses.php       "Kargoya Verildi" siparis durumu
-  class-wpkt-admin.php          Siparis kutusu, kaydetme, liste kolonu
+  class-wpkt-admin.php          Siparis kutusu, kaydetme, liste kolonu, hizli ekleme, on izleme
   class-wpkt-emails.php         E-posta akisi, musteriye gorunen takip bilgisi
   class-wpkt-email-shipped.php  WC_Email: "Kargoya verildi"
   class-wpkt-settings.php       WooCommerce ayar bolumu
   class-wpkt-updater.php        GitHub Releases guncelleyicisi
 templates/emails/               E-posta sablonlari (HTML + duz metin)
-assets/admin.css                Siparis ekrani kutusu stilleri
+assets/admin.css                Siparis ekrani kutusu ve liste stilleri
+assets/admin.js                 Liste hizli ekleme formu (AJAX)
 ```
 
 ## Yol haritasi

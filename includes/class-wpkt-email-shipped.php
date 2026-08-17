@@ -75,6 +75,25 @@ class WPKT_Email_Shipped extends WC_Email {
 	}
 
 	/**
+	 * Siparis verisiyle konu/govde/alici alanlarini doldurur.
+	 *
+	 * trigger() (gercek gonderim) ve preview_html() (on izleme) ayni
+	 * hazirlik adimini paylasir; ikisi de musteriye tam olarak ne gidecegini
+	 * ayni sekilde uretsin diye tek yerde tutulur.
+	 *
+	 * @param WC_Order $order Siparis.
+	 */
+	private function prepare( WC_Order $order ) {
+		$this->object    = $order;
+		$this->recipient = $order->get_billing_email();
+
+		$this->placeholders['{order_number}']    = $order->get_order_number();
+		$this->placeholders['{order_date}']      = wc_format_datetime( $order->get_date_created() );
+		$this->placeholders['{tracking_number}'] = WPKT_Order::get_number( $order );
+		$this->placeholders['{carrier}']         = WPKT_Carriers::label( WPKT_Order::get_carrier( $order ) );
+	}
+
+	/**
 	 * Gonderimi tetikler.
 	 *
 	 * @param int      $order_id Siparis kimligi.
@@ -88,20 +107,51 @@ class WPKT_Email_Shipped extends WC_Email {
 		}
 
 		if ( $order instanceof WC_Order ) {
-			$this->object    = $order;
-			$this->recipient = $order->get_billing_email();
-
-			$this->placeholders['{order_number}']    = $order->get_order_number();
-			$this->placeholders['{order_date}']      = wc_format_datetime( $order->get_date_created() );
-			$this->placeholders['{tracking_number}'] = WPKT_Order::get_number( $order );
-			$this->placeholders['{carrier}']         = WPKT_Carriers::label( WPKT_Order::get_carrier( $order ) );
+			$this->prepare( $order );
 		}
 
+		$sent  = false;
+		$error = '';
+
 		if ( $this->is_enabled() && $this->get_recipient() ) {
-			$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+			/*
+			 * wp_mail() basarisiz oldugunda sebebi caller'a dondurmez, yalnizca
+			 * false doner. Gercek hatayi (SMTP reddi, gecersiz adres vb.)
+			 * siparis notuna yazabilmek icin wp_mail_failed'i gecici olarak
+			 * dinliyoruz — bu eklentinin gonderiminden bagimsiz baska bir mail
+			 * ayni anda basarisiz olursa yanlislikla ona ait hatayi yakalamamak
+			 * icin dinleme yalnizca send() cagrisini sarmalar.
+			 */
+			$capture_error = static function ( $wp_error ) use ( &$error ) {
+				$error = $wp_error->get_error_message();
+			};
+
+			add_action( 'wp_mail_failed', $capture_error );
+			$sent = (bool) $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+			remove_action( 'wp_mail_failed', $capture_error );
+		}
+
+		if ( $order instanceof WC_Order ) {
+			WPKT_Order::set_mail_status( $order, $sent, $error );
 		}
 
 		$this->restore_locale();
+	}
+
+	/**
+	 * Musteriye giden govdenin aynisini (basliklar, CSS inline'lama dahil)
+	 * tarayicida gorunecek sekilde uretir. Mail gondermez.
+	 *
+	 * @param WC_Order $order Siparis.
+	 * @return string
+	 */
+	public function preview_html( WC_Order $order ) {
+		$this->setup_locale();
+		$this->prepare( $order );
+		$content = $this->get_content();
+		$this->restore_locale();
+
+		return $content;
 	}
 
 	/**
