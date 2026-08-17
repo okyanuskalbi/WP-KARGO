@@ -3,7 +3,7 @@
 Tum onemli degisiklikler burada. Surum numaralari
 [Semantic Versioning](https://semver.org/lang/tr/) izler.
 
-## [1.1.0] — 2026-08-17
+## [1.2.0] — 2026-08-17
 
 ### Eklendi
 
@@ -33,6 +33,38 @@ Tum onemli degisiklikler burada. Surum numaralari
 - Basarisiz gonderimde `_wpkt_notified_number` damgasi artik kilitlenmiyor:
   yalnizca basarili gonderimde isaretlenir, boylece gecici bir SMTP
   hatasindan sonra sonraki kayitta otomatik deneme sessizce engellenmiyor.
+- Yeni hizli-ekleme ve on izleme uclarindaki yetki kontrolleri de 1.1.0'daki
+  siparis bazli (`edit_shop_order`) kurala hizalandi.
+
+### Birlestirme notu
+
+Bu surum, GitHub'a bagimsiz olarak (bu depoyu buradan yoneten oturumun
+disinda) pushlanmis **1.1.0 (coklu kargo firmasi)** ile ayni anda gelisti;
+ikisi de o sirada "1.1.0" olarak numaralanmisti. Cakisma cozulurken bu
+surum **1.2.0**'a kaydirildi, 1.1.0 asagida oldugu gibi korundu.
+
+## [1.1.0] — 2026-08-17
+
+**2. faz baslangici: coklu kargo firmasi.**
+
+### Eklendi
+
+- **4 yeni kargo firmasi:** Aras, MNG, PTT ve Surat Kargo; her biri takip
+  adresi sablonu ve santral numarasiyla kayitli. Admin kutusu, liste kolonu
+  ve musteri e-postasi ayni kayittan beslendigi icin ek is gerektirmez.
+- **Firma bazli takip adresi ayarlari:** ozel sorgu adresi alani artik her
+  firma icin ayri (WooCommerce > Ayarlar > Kargo > Kargo Takip > Takip
+  adresleri). Alanlar kayit defterinden uretilir — `wpkt_carriers` filtresiyle
+  eklenen firmalar ayarlar sayfasinda da otomatik gorunur. Mevcut
+  `wpkt_tracking_url_yurtici` secenegi aynen korunur.
+
+### Degisti / duzeltildi
+
+- Yetki kontrolleri siparis bazina indirildi: kutu kaydi ve bildirimi yeniden
+  gonderme artik genel `edit_shop_orders` yerine `edit_shop_order` meta cap
+  uzerinden dogrulaniyor.
+- `WPKT_Order::sanitize_number()` icindeki ikinci `wp_unslash` kaldirildi;
+  ters bolu iceren takip kodlari sessizce bozulmuyordu.
 
 ## [1.0.0] — 2026-08-17
 

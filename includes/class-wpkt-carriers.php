@@ -2,9 +2,9 @@
 /**
  * Kargo firmalari kaydi.
  *
- * 1. faz yalnizca Yurtici Kargo icerir. Yeni firma eklemek icin buradaki
- * diziye bir satir eklemek yeterlidir; takip linki {no} yer tutucusuyla
- * kurulur ve diger tum modüller bu kayittan beslenir.
+ * Yeni firma eklemek icin buradaki diziye bir satir eklemek yeterlidir;
+ * takip linki {no} yer tutucusuyla kurulur ve diger tum moduller
+ * (admin kutusu, liste kolonu, e-posta, ayarlar) bu kayittan beslenir.
  *
  * @package WPKargoTakip
  */
@@ -24,6 +24,10 @@ class WPKT_Carriers {
 	/**
 	 * Tanimli firmalar.
 	 *
+	 * Sorgu adresleri firmalarca degistirilebilir; kullanici guncelleme
+	 * beklemeden WooCommerce > Ayarlar > Kargo > Kargo Takip altindan
+	 * her firma icin ozel sablon girebilir ({no} yer tutuculu).
+	 *
 	 * @return array<string,array{label:string,url:string,phone:string}>
 	 */
 	public static function all() {
@@ -32,11 +36,34 @@ class WPKT_Carriers {
 				'label' => __( 'Yurtici Kargo', 'wp-kargo-takip' ),
 				/*
 				 * Yurtici'nin genel takip formu kargo takip numarasini (veya
-				 * gonderi kodunu) code parametresiyle alir. Sorgu dizesi
-				 * degisirse ayarlardan ozel sablon girilebilir.
+				 * gonderi kodunu) code parametresiyle alir.
 				 */
 				'url'   => 'https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code={no}',
 				'phone' => '444 99 99',
+			),
+			'aras'    => array(
+				'label' => __( 'Aras Kargo', 'wp-kargo-takip' ),
+				'url'   => 'https://kargotakip.araskargo.com.tr/mainpage.aspx?code={no}',
+				'phone' => '444 25 52',
+			),
+			'mng'     => array(
+				'label' => __( 'MNG Kargo', 'wp-kargo-takip' ),
+				'url'   => 'https://kargotakip.mngkargo.com.tr/?takipNo={no}',
+				'phone' => '444 06 06',
+			),
+			'ptt'     => array(
+				'label' => __( 'PTT Kargo', 'wp-kargo-takip' ),
+				/*
+				 * PTT barkod numarasini q parametresiyle alir; sayfa sonucu
+				 * dogrudan gosterir, ek form doldurulmaz.
+				 */
+				'url'   => 'https://gonderitakip.ptt.gov.tr/Track/Verify?q={no}',
+				'phone' => '444 1 788',
+			),
+			'surat'   => array(
+				'label' => __( 'Surat Kargo', 'wp-kargo-takip' ),
+				'url'   => 'https://www.suratkargo.com.tr/KargoTakip/?kargotakipno={no}',
+				'phone' => '0850 202 0 202',
 			),
 		);
 

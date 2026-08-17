@@ -55,34 +55,56 @@ class WPKT_Settings {
 				'id'    => 'wpkt_options',
 			),
 			array(
-				'title'         => __( 'Durumu otomatik degistir', 'wp-kargo-takip' ),
-				'desc'          => __( 'Takip numarasi kaydedildiginde siparisi "Kargoya Verildi" durumuna al', 'wp-kargo-takip' ),
-				'id'            => 'wpkt_auto_status',
-				'type'          => 'checkbox',
-				'default'       => 'yes',
+				'title'          => __( 'Durumu otomatik degistir', 'wp-kargo-takip' ),
+				'desc'           => __( 'Takip numarasi kaydedildiginde siparisi "Kargoya Verildi" durumuna al', 'wp-kargo-takip' ),
+				'id'             => 'wpkt_auto_status',
+				'type'           => 'checkbox',
+				'default'        => 'yes',
 				'checkbox_group' => 'start',
 			),
 			array(
-				'desc'          => __( 'Takip bilgisini diger WooCommerce e-postalarina da ekle', 'wp-kargo-takip' ),
-				'id'            => 'wpkt_show_in_emails',
-				'type'          => 'checkbox',
-				'default'       => 'yes',
+				'desc'           => __( 'Takip bilgisini diger WooCommerce e-postalarina da ekle', 'wp-kargo-takip' ),
+				'id'             => 'wpkt_show_in_emails',
+				'type'           => 'checkbox',
+				'default'        => 'yes',
 				'checkbox_group' => 'end',
-			),
-			array(
-				'title'    => __( 'Yurtici Kargo takip adresi', 'wp-kargo-takip' ),
-				'desc'     => __( 'Bos birakilirsa eklentinin varsayilan adresi kullanilir. <code>{no}</code> takip numarasiyla degistirilir.', 'wp-kargo-takip' ),
-				'desc_tip' => __( 'Kargo firmasi sorgu adresini degistirirse guncelleme beklemeden buradan duzeltebilirsiniz.', 'wp-kargo-takip' ),
-				'id'       => 'wpkt_tracking_url_yurtici',
-				'type'     => 'url',
-				'default'  => '',
-				'css'      => 'min-width:420px;',
-				'placeholder' => 'https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code={no}',
 			),
 			array(
 				'type' => 'sectionend',
 				'id'   => 'wpkt_options',
 			),
+			array(
+				'title' => __( 'Takip adresleri', 'wp-kargo-takip' ),
+				'type'  => 'title',
+				'desc'  => __( 'Bos birakilan firmalarda eklentinin varsayilan adresi kullanilir. <code>{no}</code> takip numarasiyla degistirilir. Kargo firmasi sorgu adresini degistirirse guncelleme beklemeden buradan duzeltebilirsiniz.', 'wp-kargo-takip' ),
+				'id'    => 'wpkt_tracking_urls',
+			),
+		);
+
+		/*
+		 * Her firma icin ozel takip adresi alani. Alanlar kayit defterinden
+		 * uretilir: wpkt_carriers filtresiyle eklenen firmalar da otomatik
+		 * burada gorunur. Secenek anahtari (wpkt_tracking_url_{firma})
+		 * WPKT_Carriers::tracking_url() ile ayni kalip kullanir.
+		 */
+		foreach ( WPKT_Carriers::all() as $key => $carrier ) {
+			$fields[] = array(
+				'title'       => sprintf(
+					/* translators: %s: kargo firmasi adi. */
+					__( '%s takip adresi', 'wp-kargo-takip' ),
+					$carrier['label']
+				),
+				'id'          => 'wpkt_tracking_url_' . $key,
+				'type'        => 'url',
+				'default'     => '',
+				'css'         => 'min-width:420px;',
+				'placeholder' => $carrier['url'],
+			);
+		}
+
+		$fields[] = array(
+			'type' => 'sectionend',
+			'id'   => 'wpkt_tracking_urls',
 		);
 
 		return $fields;

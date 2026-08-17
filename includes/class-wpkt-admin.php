@@ -220,7 +220,9 @@ class WPKT_Admin {
 
 		$order = wc_get_order( $order_id );
 
-		if ( ! $order instanceof WC_Order || ! current_user_can( 'edit_shop_orders' ) ) {
+		// Siparis bazinda yetki: genel edit_shop_orders yerine meta cap
+		// sorgulanir; boylece tek siparise kisitli roller de dogru degerlenir.
+		if ( ! $order instanceof WC_Order || ! current_user_can( 'edit_shop_order', $order_id ) ) {
 			return;
 		}
 
@@ -318,7 +320,7 @@ class WPKT_Admin {
 			 * gecmek yanlis islem olur; oradaki siparisler yine siparis
 			 * ekranindaki kutudan islenir.
 			 */
-			if ( $order->has_status( 'processing' ) && current_user_can( 'edit_shop_orders' ) ) {
+			if ( $order->has_status( 'processing' ) && current_user_can( 'edit_shop_order', $order->get_id() ) ) {
 				$this->render_quick_form( $order );
 			} else {
 				echo '<span class="wpkt-dash" aria-hidden="true">&ndash;</span>';
@@ -408,10 +410,6 @@ class WPKT_Admin {
 			wp_send_json_error( array( 'message' => __( 'Oturum suresi doldu, sayfayi yenileyin.', 'wp-kargo-takip' ) ), 403 );
 		}
 
-		if ( ! current_user_can( 'edit_shop_orders' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Bu islem icin yetkiniz yok.', 'wp-kargo-takip' ) ), 403 );
-		}
-
 		$order_id = isset( $_POST['order_id'] ) ? absint( $_POST['order_id'] ) : 0;
 		$order    = $order_id ? wc_get_order( $order_id ) : false;
 
@@ -419,7 +417,15 @@ class WPKT_Admin {
 			wp_send_json_error( array( 'message' => __( 'Siparis bulunamadi.', 'wp-kargo-takip' ) ), 404 );
 		}
 
-		$number = isset( $_POST['tracking_number'] ) ? wc_clean( wp_unslash( $_POST['tracking_number'] ) ) : '';
+		// Siparis bazinda yetki: genel edit_shop_orders yerine meta cap
+		// sorgulanir (kaydetme akisiyla ayni kural).
+		if ( ! current_user_can( 'edit_shop_order', $order_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Bu islem icin yetkiniz yok.', 'wp-kargo-takip' ) ), 403 );
+		}
+
+		// Unslash burada, temizleme WPKT_Order::sanitize_number() icinde:
+		// ikisi de ayni yerde yapilirsa ters bolu iceren kodlar bozulur.
+		$number = isset( $_POST['tracking_number'] ) ? (string) wp_unslash( $_POST['tracking_number'] ) : '';
 
 		if ( '' === $number ) {
 			wp_send_json_error( array( 'message' => __( 'Takip numarasi bos olamaz.', 'wp-kargo-takip' ) ) );
@@ -471,10 +477,18 @@ class WPKT_Admin {
 	/**
 	 * Bildirimi elle yeniden gonderir.
 	 *
+	 * WooCommerce bu kancayi islem oncesinde genel siparis yetkisiyle
+	 * cagirir; yine de siparis bazinda dogrulanir — kanca herkese acik
+	 * bir giris noktasi degildir ama derinlemesine savunma zarar vermez.
+	 *
 	 * @param WC_Order $order Siparis.
 	 */
 	public function resend_email( $order ) {
 		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_shop_order', $order->get_id() ) ) {
 			return;
 		}
 
@@ -517,7 +531,7 @@ class WPKT_Admin {
 			wp_die( esc_html__( 'Gecersiz veya suresi dolmus istek.', 'wp-kargo-takip' ), '', array( 'response' => 400 ) );
 		}
 
-		if ( ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( ! current_user_can( 'edit_shop_order', $order_id ) ) {
 			wp_die( esc_html__( 'Bu islem icin yetkiniz yok.', 'wp-kargo-takip' ), '', array( 'response' => 403 ) );
 		}
 

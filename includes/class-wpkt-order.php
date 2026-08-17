@@ -132,15 +132,19 @@ class WPKT_Order {
 	/**
 	 * Takip numarasini temizler.
 	 *
-	 * Yurtici numaralari rakamdan olusur ama kullanicilar bosluk/tire ile
+	 * Numaralar cogunlukla rakamdan olusur ama kullanicilar bosluk/tire ile
 	 * yapistirir; harf iceren gonderi kodlarini da bozmamak icin yalnizca
 	 * alfanumerik olmayan karakterler atilir.
+	 *
+	 * Girdi ham ya da unslash edilmis olabilir; slash durumu cagiran tarafin
+	 * sorumlulugundadir. Burada tekrar wp_unslash uygulanmaz: iki kez
+	 * uygulanirsa numaradaki gercek ters bolu isareti sessizce kaybolur.
 	 *
 	 * @param string $number Girdi.
 	 * @return string
 	 */
 	public static function sanitize_number( $number ) {
-		$number = wc_clean( wp_unslash( (string) $number ) );
+		$number = wc_clean( (string) $number );
 		$number = preg_replace( '/[^A-Za-z0-9]/', '', $number );
 
 		return strtoupper( (string) $number );
